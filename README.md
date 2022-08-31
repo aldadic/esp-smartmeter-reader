@@ -53,3 +53,7 @@ recorder:
     entities:
       - sensor.momentanleistung
 ```
+
+## TODO
+
+It would be nice to adapt this sketch for [ESPHome](https://esphome.io/). This should be possible with the [Custom UART Device](https://esphome.io/custom/uart.html) and [this guide](https://esphome.io/components/sensor/custom.html).
