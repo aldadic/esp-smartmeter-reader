@@ -95,30 +95,30 @@ void ParseReceivedData() {
   }
 
   // Decrypt message
-  byte decrpyted_message[74];
-  DecryptMessage(decrpyted_message);
+  byte decrypted_message[74];
+  DecryptMessage(decrypted_message);
 
   // Extract time and date from decrypted message
-  int year = BytesToInt(decrpyted_message, 22, 24);
-  int month = BytesToInt(decrpyted_message, 24, 25);
-  int day = BytesToInt(decrpyted_message, 25, 26);
-  int hour = BytesToInt(decrpyted_message, 27, 28);
-  int minute = BytesToInt(decrpyted_message, 28, 29);
-  int second = BytesToInt(decrpyted_message, 29, 30);
+  int year = BytesToInt(decrypted_message, 22, 24);
+  int month = BytesToInt(decrypted_message, 24, 25);
+  int day = BytesToInt(decrypted_message, 25, 26);
+  int hour = BytesToInt(decrypted_message, 27, 28);
+  int minute = BytesToInt(decrypted_message, 28, 29);
+  int second = BytesToInt(decrypted_message, 29, 30);
   char timestamp[19];
   sprintf(timestamp, "%02d.%02d.%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
 
   // Create JSON
   StaticJsonDocument<256> doc;
   doc["timestamp"] = timestamp;
-  doc["+A"] = BytesToInt(decrpyted_message, 35, 39)/1000.0;
-  doc["-A"] = BytesToInt(decrpyted_message, 40, 44)/1000.0;
-  doc["+R"] = BytesToInt(decrpyted_message, 45, 49)/1000.0;
-  doc["-R"] = BytesToInt(decrpyted_message, 50, 54)/1000.0;
-  doc["+P"] = BytesToInt(decrpyted_message, 55, 59);
-  doc["-P"] = BytesToInt(decrpyted_message, 60, 64);
-  doc["+Q"] = BytesToInt(decrpyted_message, 65, 69);
-  doc["-Q"] = BytesToInt(decrpyted_message, 70, 74);
+  doc["+A"] = BytesToInt(decrypted_message, 35, 39)/1000.0;
+  doc["-A"] = BytesToInt(decrypted_message, 40, 44)/1000.0;
+  doc["+R"] = BytesToInt(decrypted_message, 45, 49)/1000.0;
+  doc["-R"] = BytesToInt(decrypted_message, 50, 54)/1000.0;
+  doc["+P"] = BytesToInt(decrypted_message, 55, 59);
+  doc["-P"] = BytesToInt(decrypted_message, 60, 64);
+  doc["+Q"] = BytesToInt(decrypted_message, 65, 69);
+  doc["-Q"] = BytesToInt(decrypted_message, 70, 74);
   char payload[256];
   serializeJson(doc, payload);
 
@@ -150,18 +150,18 @@ bool ValidateCRC() {
 mbedtls_aes_context aes;
 
 void DecryptMessage(byte decrpyted_message[74]) {
-  // Extract message and nonce from received data
-  byte encrpyted_message[74] = {0};
-  memcpy(encrpyted_message, received_data + 28, 74);
-  byte nonce[16] = {0};
-  memcpy(nonce, received_data + 14, 8);
-  memcpy(nonce + 8, received_data + 24, 4);
-  nonce[15] = 0x02; 
+  // Extract message and iv from received data
+  byte encrypted_message[74] = {0};
+  memcpy(encrypted_message, received_data + 28, 74);
+  byte iv[16] = {0};
+  memcpy(iv, received_data + 14, 8);
+  memcpy(iv + 8, received_data + 24, 4);
+  iv[15] = 0x02; 
 
   // Decrypt message
   size_t nc_off = 0;
   unsigned char stream_block[16] = {0};
-  mbedtls_aes_crypt_ctr(&aes, 74, &nc_off, nonce, stream_block, encrpyted_message, decrpyted_message);
+  mbedtls_aes_crypt_ctr(&aes, 74, &nc_off, iv, stream_block, encrypted_message, decrpyted_message);
 }
 
 // --------------- SETUP & LOOP ---------------
