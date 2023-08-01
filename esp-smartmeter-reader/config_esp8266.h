@@ -6,7 +6,7 @@ const byte KEY[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
 
 // --------------- MQTT ---------------
 
-const bool MQTT_ENABLED = false;
+const bool MQTT_ENABLED = true;
 const char* WIFI_SSID = "ssid";
 const char* WIFI_PASS = "pass";
 const char* MQTT_SERVER = "127.0.0.1";
@@ -17,12 +17,11 @@ const char* MQTT_TOPIC = "homeassistant/sensor/smartmeter/state";
 
 // --------------- SMART METER ---------------
 
-// For ESP8266 change Serial2 to Serial
-HardwareSerial *smart_meter = &Serial2;
+HardwareSerial *smart_meter = &Serial;
 const int SMARTMETER_BAUD_RATE = 9600;
 
 // --------------- LOGGING ---------------
 
 // Comment out or delete the next two lines to disable logging
 #define LOGGING_ENABLED
-const int SERIAL_MONITOR_BAUD_RATE = 9600;
+const int SERIAL_MONITOR_BAUD_RATE = SMARTMETER_BAUD_RATE;  // because we use the same port
