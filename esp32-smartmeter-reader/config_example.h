@@ -1,7 +1,7 @@
 
 // --------------- DECRYPTION KEY ---------------
 
-// The decryption should be provided as byte array (i.e "7EA0" -> {0x7e, 0xa0})
+// The decryption key should be provided as byte array (i.e "7EA0" -> {0x7e, 0xa0})
 const byte KEY[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 // --------------- MQTT ---------------
@@ -15,9 +15,14 @@ const char* MQTT_USER = "user";
 const char* MQTT_PASS = "pass";
 const char* MQTT_TOPIC = "homeassistant/sensor/smartmeter/state";
 
-// --------------- SERIAL PORTS ---------------
+// --------------- SMART METER ---------------
 
-const int CONSOLE_BAUD_RATE = 9600;
-const int SMARTMETER_BAUD_RATE = 9600;
-HardwareSerial *console = &Serial;
+// For ESP8266 change Serial2 to Serial
 HardwareSerial *smart_meter = &Serial2;
+const int SMARTMETER_BAUD_RATE = 9600;
+
+// --------------- LOGGING ---------------
+
+// Comment out or delete the next two lines to disable logging
+#define LOGGING_ENABLED
+const int SERIAL_MONITOR_BAUD_RATE = 9600;

@@ -17,21 +17,28 @@
 
 void SetupWifi() {
   delay(10);
-  console->println();
-  console->print("Connecting to ");
-  console->println(WIFI_SSID);
+
+  #ifdef LOGGING_ENABLED
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(WIFI_SSID);
+  #endif
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    console->print(".");
+    #ifdef LOGGING_ENABLED
+    Serial.print(".");
+    #endif
   }
 
-  console->println("");
-  console->println("WiFi connected");
-  console->println("IP address: ");
-  console->println(WiFi.localIP());
+  #ifdef LOGGING_ENABLED
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  #endif
 }
 
 // --------------- MQTT ---------------
@@ -41,13 +48,19 @@ PubSubClient mqtt_client(wifi_client);
 
 void ReconnectMQTT() {
   while (!mqtt_client.connected()) {
-    console->print("Attempting MQTT connection...");
+    #ifdef LOGGING_ENABLED
+    Serial.print("Attempting MQTT connection...");
+    #endif
     if (mqtt_client.connect("ESPClient", MQTT_USER, MQTT_PASS)) {
-      console->println("connected");
+      #ifdef LOGGING_ENABLED
+      Serial.println("connected");
+      #endif
     } else {
-      console->print("failed, rc=");
-      console->print(mqtt_client.state());
-      console->println(" try again in 5 seconds");
+      #ifdef LOGGING_ENABLED
+      Serial.print("failed, rc=");
+      Serial.print(mqtt_client.state());
+      Serial.println(" try again in 5 seconds");
+      #endif
       delay(5000);
     }
   }
@@ -131,7 +144,9 @@ void ParseReceivedData() {
   serializeJson(doc, payload);
 
   // Publish JSON
-  console->println(payload);
+  #ifdef LOGGING_ENABLED
+  Serial.println(payload);
+  #endif
   if (MQTT_ENABLED) {
     mqtt_client.publish(MQTT_TOPIC, payload, false);
   }
@@ -147,7 +162,9 @@ bool ValidateCRC() {
   int crc = CRC16.x25(message, 101);
   int expected_crc = received_data[103] * 256 + received_data[102];
   if (crc != expected_crc) {
-    console->println("WARNING: CRC check failed");
+    #ifdef LOGGING_ENABLED
+    Serial.println("WARNING: CRC check failed");
+    #endif
     return false;
   }
   return true;
@@ -184,8 +201,10 @@ void DecryptMessage(byte decrypted_message[74]) {
 // --------------- SETUP & LOOP ---------------
 
 void setup() {
-  console->begin(CONSOLE_BAUD_RATE);
   smart_meter->begin(SMARTMETER_BAUD_RATE);
+  #ifdef LOGGING_ENABLED
+  Serial.begin(SERIAL_MONITOR_BAUD_RATE);
+  #endif
   #if defined(ESP32)
   mbedtls_aes_init(&aes);
   mbedtls_aes_setkey_enc(&aes, KEY, 128);
