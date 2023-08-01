@@ -1,9 +1,17 @@
 #include "config.h"
-#include "mbedtls/aes.h"
 #include <FastCRC.h>
 #include <ArduinoJson.h>
-#include <WiFi.h>
 #include <PubSubClient.h>
+#if defined(ESP32)
+#include "mbedtls/aes.h"
+#include <WiFi.h>
+#elif defined(ESP8266)
+#include <AES.h>
+#include <CTR.h>
+#include <ESP8266WiFi.h>
+#else
+#error "Error: The device is not a ESP8266 or ESP32!"
+#endif
 
 // --------------- WIFI ---------------
 
@@ -147,9 +155,13 @@ bool ValidateCRC() {
 
 // --------------- DECRYPTOR ---------------
 
+#if defined(ESP32)
 mbedtls_aes_context aes;
+#elif defined(ESP8266)
+CTR<AES128> ctr;
+#endif
 
-void DecryptMessage(byte decrpyted_message[74]) {
+void DecryptMessage(byte decrypted_message[74]) {
   // Extract message and iv from received data
   byte encrypted_message[74] = {0};
   memcpy(encrypted_message, received_data + 28, 74);
@@ -159,9 +171,14 @@ void DecryptMessage(byte decrpyted_message[74]) {
   iv[15] = 0x02; 
 
   // Decrypt message
+  #if defined(ESP32)
   size_t nc_off = 0;
   unsigned char stream_block[16] = {0};
-  mbedtls_aes_crypt_ctr(&aes, 74, &nc_off, iv, stream_block, encrypted_message, decrpyted_message);
+  mbedtls_aes_crypt_ctr(&aes, 74, &nc_off, iv, stream_block, encrypted_message, decrypted_message);
+  #elif defined(ESP8266)
+  ctr.setIV(iv, sizeof(iv));
+  ctr.decrypt(decrypted_message, encrypted_message, sizeof(encrypted_message));
+  #endif
 }
 
 // --------------- SETUP & LOOP ---------------
@@ -169,8 +186,12 @@ void DecryptMessage(byte decrpyted_message[74]) {
 void setup() {
   console->begin(CONSOLE_BAUD_RATE);
   smart_meter->begin(SMARTMETER_BAUD_RATE);
+  #if defined(ESP32)
   mbedtls_aes_init(&aes);
   mbedtls_aes_setkey_enc(&aes, KEY, 128);
+  #elif defined(ESP8266)
+  ctr.setKey(KEY, sizeof(KEY));
+  #endif
   if (MQTT_ENABLED) {
     SetupWifi();
     mqtt_client.setServer(MQTT_SERVER, MQTT_PORT);
