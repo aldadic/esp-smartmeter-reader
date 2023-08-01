@@ -1,4 +1,4 @@
 .vscode
 build
 tests
-esp32-smartmeter-reader/config.h
+*/config.h
