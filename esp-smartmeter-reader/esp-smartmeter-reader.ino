@@ -126,7 +126,7 @@ void ParseReceivedData() {
   int hour = BytesToInt(decrypted_message, 27, 28);
   int minute = BytesToInt(decrypted_message, 28, 29);
   int second = BytesToInt(decrypted_message, 29, 30);
-  char timestamp[19];
+  char timestamp[20];
   sprintf(timestamp, "%02d.%02d.%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
 
   // Create JSON
