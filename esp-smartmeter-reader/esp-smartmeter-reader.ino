@@ -202,11 +202,9 @@ void DecryptMessage(byte decrypted_message[74]) {
 
 void setup() {
   smart_meter->begin(SMARTMETER_BAUD_RATE);
-
-#ifdef SWAP_SERIAL      // use on ESP8266 if UART used by USB bridge:
-  smart_meter->swap();  // switch to GPIO15 (TX) and GPIO13 (RX) 
-#endif
-  
+  #ifdef SWAP_SERIAL
+    smart_meter->swap();  // ESP8266: Remap Serial (UART0) to GPIO15 (TX) and GPIO13 (RX)
+  #endif
   #ifdef LOGGING_ENABLED
   Serial.begin(SERIAL_MONITOR_BAUD_RATE);
   #endif
