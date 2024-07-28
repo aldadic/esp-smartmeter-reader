@@ -7,7 +7,7 @@ This Arduino sketch was made to read and decrypt the data from my Smart Meter (L
 
 ## Setting up the ESP32 / ESP8266
 
-To be able to use the optical user interface of the Smart Meter an [IR reader with TTL-Interface](https://wiki.volkszaehler.org/hardware/controllers/ir-schreib-lesekopf-ttl-ausgang) is needed (I am using [this](https://www.ebay.de/itm/313460034498) one). This device reads the data from the optical user interface and transmits it to the ESP32 or ESP8266 via serial communication. Because normally UART0 is used for the USB connection (e.g. flashing the device, serial monitor, etc.), it makes sense to use UART2 for the IR meter to avoid any interference. This is why we connect the IR reader to the ESP32 in the following way:
+To be able to use the optical user interface of the Smart Meter an [IR reader with TTL-Interface](https://wiki.volkszaehler.org/hardware/controllers/ir-schreib-lesekopf-ttl-ausgang) is needed (I am using [this](https://www.ebay.de/itm/313460034498) one). This device reads the data from the optical user interface and transmits it to the ESP32 or ESP8266 via serial communication. Because normally UART0 is used for the USB connection (e.g. flashing the device, serial monitor, etc.), it makes sense to use UART2 for the IR reader. This is why we connect the IR reader to the ESP32 in the following way:
 
 | IR reader  | ESP32        |
 | ---------- | ------------ |
@@ -16,16 +16,15 @@ To be able to use the optical user interface of the Smart Meter an [IR reader wi
 | RX         | GPIO16 (RX2) |
 | TX         | GPIO17 (TX2) |
 
-Since only UART0 is available on the ESP8266, we have to connect the IR reader to the ESP8266 in this way:
+The ESP8266 has two UARTs, however, UART1 is TX-only. Therefore, we have to use UART0 for the IR reader. In order to not interfere with the USB connection, we use `Serial.swap()` (by defining `SWAP_SERIAL` in the config file) to swap the pins for UART0 to GPIO15 (TX) and GPIO13 (RX). However, this way we can't use UART0 for logging anymore. But since we only want to send data to the serial monitor, we can use UART1 for that and still send the data through the USB connection by connecting GPIO2 (D4) to GPIO1 (TX). Hence, we connect the IR reader to the ESP8266 in the following way:
 
-| IR reader  | ESP8266      |
-| ---------- | ------------ |
-| VCC        | 3.3V         |
-| GND        | GND          |
-| RX         | GPIO3 (RX)   |
-| TX         | GPIO1 (TX)   |
-
-However, this causes some problems. First of all, you will need to disconnect the IR reader from the ESP8266 while uploading the sketch. Furthermore, using the serial monitor for logging purposes might cause issues. It works for me, but you should consider disabling logging if you encounter any problems.
+| IR reader  | ESP8266                          |
+| ---------- | -------------------------------- |
+| VCC        | 3.3V                             |
+| GND        | GND                              |
+| RX         | GPIO13 (D7)                      |
+| TX         | GPIO15 (D8)                      |
+|            | connect GPIO2 (D4) to GPIO1 (TX) |
 
 ## Configuring and uploading the sketch
 
@@ -34,8 +33,11 @@ After you cloned the repository, rename `config_esp32.h` or `config_esp8266.h` (
 * [FastCRC](https://github.com/FrankBoesing/FastCRC)
 * [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 * [PubSubClient](https://github.com/knolleary/pubsubclient)
+* [Crypto](https://github.com/OperatorFoundation/Crypto) (only for ESP8266*)
 
-All those libraries must be installed via the Library Manager. For the ESP32 we will use the [mbedtls](https://github.com/Mbed-TLS/mbedtls) library for decryption, which should be already available in the Arduino IDE. Because mbedtls is not available for the ESP8266, we use the [Crypto](https://github.com/OperatorFoundation/Crypto) library on the ESP8266 instead. Therefore, you must also install this library via the Library Manager if you are using the ESP8266. Once that is done you should be able to compile and upload the sketch via the Arduino IDE.
+All those libraries must be installed via the Library Manager. Once that is done you should be able to compile and upload the sketch via the Arduino IDE.
+
+\*For the ESP32, we use the [mbedtls](https://github.com/Mbed-TLS/mbedtls) library for decryption, which should be already available in the Arduino IDE. Because mbedtls is not available for the ESP8266, we use the [Crypto](https://github.com/OperatorFoundation/Crypto) library on the ESP8266 instead.
 
 ## Home Assistant integration
 
@@ -64,7 +66,3 @@ recorder:
     entities:
       - sensor.momentanleistung
 ```
-
-## TODO
-
-It would be nice to adapt this sketch for [ESPHome](https://esphome.io/). This should be possible with the [Custom UART Device](https://esphome.io/custom/uart.html) and [this guide](https://esphome.io/components/sensor/custom.html).
