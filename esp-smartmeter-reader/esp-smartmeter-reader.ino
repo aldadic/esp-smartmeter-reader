@@ -18,27 +18,21 @@
 void SetupWifi() {
   delay(10);
 
-  #ifdef LOGGING_ENABLED
   logger->println();
   logger->print("Connecting to ");
   logger->println(WIFI_SSID);
-  #endif
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    #ifdef LOGGING_ENABLED
     logger->print(".");
-    #endif
   }
 
-  #ifdef LOGGING_ENABLED
   logger->println("");
   logger->println("WiFi connected");
   logger->println("IP address: ");
   logger->println(WiFi.localIP());
-  #endif
 }
 
 // --------------- MQTT ---------------
@@ -48,19 +42,13 @@ PubSubClient mqtt_client(wifi_client);
 
 void ReconnectMQTT() {
   while (!mqtt_client.connected()) {
-    #ifdef LOGGING_ENABLED
     logger->print("Attempting MQTT connection...");
-    #endif
     if (mqtt_client.connect("ESPClient", MQTT_USER, MQTT_PASS)) {
-      #ifdef LOGGING_ENABLED
       logger->println("connected");
-      #endif
     } else {
-      #ifdef LOGGING_ENABLED
       logger->print("failed, rc=");
       logger->print(mqtt_client.state());
       logger->println(" try again in 5 seconds");
-      #endif
       delay(5000);
     }
   }
@@ -144,9 +132,7 @@ void ParseReceivedData() {
   serializeJson(doc, payload);
 
   // Publish JSON
-  #ifdef LOGGING_ENABLED
   logger->println(payload);
-  #endif
   if (MQTT_ENABLED) {
     mqtt_client.publish(MQTT_TOPIC, payload, false);
   }
@@ -162,9 +148,7 @@ bool ValidateCRC() {
   int crc = CRC16.x25(message, 101);
   int expected_crc = received_data[103] * 256 + received_data[102];
   if (crc != expected_crc) {
-    #ifdef LOGGING_ENABLED
     logger->println("WARNING: CRC check failed");
-    #endif
     return false;
   }
   return true;
@@ -205,9 +189,7 @@ void setup() {
   #ifdef SWAP_SERIAL
     smart_meter->swap();  // ESP8266: Remap Serial (UART0) to GPIO15 (TX) and GPIO13 (RX)
   #endif
-  #ifdef LOGGING_ENABLED
   logger->begin(SERIAL_MONITOR_BAUD_RATE);
-  #endif
   #if defined(ESP32)
   mbedtls_aes_init(&aes);
   mbedtls_aes_setkey_enc(&aes, KEY, 128);

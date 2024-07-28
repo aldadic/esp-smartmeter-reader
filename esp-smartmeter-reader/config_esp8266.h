@@ -23,7 +23,5 @@ const int SMARTMETER_BAUD_RATE = 9600;
 
 // --------------- LOGGING ---------------
 
-// Comment out or delete the next two lines to disable logging
-#define LOGGING_ENABLED
 HardwareSerial *logger = &Serial1;
 const int SERIAL_MONITOR_BAUD_RATE = 9600;
