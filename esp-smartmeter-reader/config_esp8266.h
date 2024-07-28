@@ -19,7 +19,7 @@ const char* MQTT_TOPIC = "homeassistant/sensor/smartmeter/state";
 
 HardwareSerial *smart_meter = &Serial;
 const int SMARTMETER_BAUD_RATE = 9600;
-#define SWAP_SERIAL  // use alternative pins for serial: GPIO15 (TX) and GPIO13 (RX) 
+// #define SWAP_SERIAL  // Use alternative pins for Serial: GPIO15 (TX) and GPIO13 (RX) 
 
 // --------------- LOGGING ---------------
 
