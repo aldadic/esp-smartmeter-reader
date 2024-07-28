@@ -221,9 +221,11 @@ void setup() {
 }
 
 void loop() {
-  if (!mqtt_client.connected()) {
-    ReconnectMQTT();
+  if (MQTT_ENABLED) {
+    if (!mqtt_client.connected()) {
+      ReconnectMQTT();
+    }
+    mqtt_client.loop();
   }
-  mqtt_client.loop();
   ReadSerialData();
 }
