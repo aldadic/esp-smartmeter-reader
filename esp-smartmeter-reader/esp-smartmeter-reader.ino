@@ -19,9 +19,9 @@ void SetupWifi() {
   delay(10);
 
   #ifdef LOGGING_ENABLED
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(WIFI_SSID);
+  logger->println();
+  logger->print("Connecting to ");
+  logger->println(WIFI_SSID);
   #endif
 
   WiFi.begin(WIFI_SSID, WIFI_PASS);
@@ -29,15 +29,15 @@ void SetupWifi() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     #ifdef LOGGING_ENABLED
-    Serial.print(".");
+    logger->print(".");
     #endif
   }
 
   #ifdef LOGGING_ENABLED
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+  logger->println("");
+  logger->println("WiFi connected");
+  logger->println("IP address: ");
+  logger->println(WiFi.localIP());
   #endif
 }
 
@@ -49,17 +49,17 @@ PubSubClient mqtt_client(wifi_client);
 void ReconnectMQTT() {
   while (!mqtt_client.connected()) {
     #ifdef LOGGING_ENABLED
-    Serial.print("Attempting MQTT connection...");
+    logger->print("Attempting MQTT connection...");
     #endif
     if (mqtt_client.connect("ESPClient", MQTT_USER, MQTT_PASS)) {
       #ifdef LOGGING_ENABLED
-      Serial.println("connected");
+      logger->println("connected");
       #endif
     } else {
       #ifdef LOGGING_ENABLED
-      Serial.print("failed, rc=");
-      Serial.print(mqtt_client.state());
-      Serial.println(" try again in 5 seconds");
+      logger->print("failed, rc=");
+      logger->print(mqtt_client.state());
+      logger->println(" try again in 5 seconds");
       #endif
       delay(5000);
     }
@@ -145,7 +145,7 @@ void ParseReceivedData() {
 
   // Publish JSON
   #ifdef LOGGING_ENABLED
-  Serial.println(payload);
+  logger->println(payload);
   #endif
   if (MQTT_ENABLED) {
     mqtt_client.publish(MQTT_TOPIC, payload, false);
@@ -163,7 +163,7 @@ bool ValidateCRC() {
   int expected_crc = received_data[103] * 256 + received_data[102];
   if (crc != expected_crc) {
     #ifdef LOGGING_ENABLED
-    Serial.println("WARNING: CRC check failed");
+    logger->println("WARNING: CRC check failed");
     #endif
     return false;
   }
@@ -206,7 +206,7 @@ void setup() {
     smart_meter->swap();  // ESP8266: Remap Serial (UART0) to GPIO15 (TX) and GPIO13 (RX)
   #endif
   #ifdef LOGGING_ENABLED
-  Serial.begin(SERIAL_MONITOR_BAUD_RATE);
+  logger->begin(SERIAL_MONITOR_BAUD_RATE);
   #endif
   #if defined(ESP32)
   mbedtls_aes_init(&aes);
