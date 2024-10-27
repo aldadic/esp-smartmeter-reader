@@ -56,7 +56,6 @@ void ReconnectMQTT() {
 
 // --------------- SERIAL READER ---------------
 
-
 byte received_data[MESSAGE_LENGTH];
 
 void ReadSerialData() {

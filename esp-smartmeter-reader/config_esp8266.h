@@ -21,17 +21,17 @@ HardwareSerial *smart_meter = &Serial;
 const int SMARTMETER_BAUD_RATE = 9600;
 #define SWAP_SERIAL  // Use alternative pins for Serial: GPIO15 (TX) and GPIO13 (RX)
 
-// // Landys & Gyr
+// -- Landis+Gyr
 // const unsigned int IV_ADD = 0;
 // const unsigned int PAYLOAD_ADD = 0;
 // const unsigned int MESSAGE_LENGTH = 105;
 // const unsigned int PAYLOAD_LENGTH = 74;
 
-// // Siemens
+// -- Siemens
 // const unsigned int IV_ADD = 2;
 // const unsigned int PAYLOAD_ADD = 18;
-// const unsigned int MESSAGE_LENGTH = 125; // Landys & Gyr: 105 ; 
-// const unsigned int PAYLOAD_LENGTH = 90; // 74
+// const unsigned int MESSAGE_LENGTH = 125;
+// const unsigned int PAYLOAD_LENGTH = 90;
 
 // --------------- LOGGING ---------------
 

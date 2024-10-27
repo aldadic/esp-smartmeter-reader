@@ -28,7 +28,7 @@ The ESP8266 has two UARTs, however, UART1 is TX-only. Therefore, we have to use 
 
 ## Configuring and uploading the sketch
 
-After you cloned the repository, rename `config_esp32.h` or `config_esp8266.h` (depending on which device you have) to `config.h` and open it. Adjust the settings and save the file (the decryption key can be obtained in the [Smart Meter Webportal](https://smartmeter-web.wienernetze.at/)). Be sure to uncomment the correct settings for your brand of meter in the "SMART METER" section. After that open `esp-smartmeter-reader.ino` in the Arduino IDE. The sketch uses the following libaries:
+After you cloned the repository, rename `config_esp32.h` or `config_esp8266.h` (depending on which device you have) to `config.h` and open it. Adjust the settings and save the file (the decryption key can be obtained in the [Smart Meter Webportal](https://smartmeter-web.wienernetze.at/)). Don't forget to uncomment the settings for your specific smart meter brand in the "SMART METER" section. After that open `esp-smartmeter-reader.ino` in the Arduino IDE. The sketch uses the following libaries:
 
 * [FastCRC](https://github.com/FrankBoesing/FastCRC)
 * [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
