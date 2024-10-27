@@ -21,10 +21,10 @@ HardwareSerial *smart_meter = &Serial2;
 const int SMARTMETER_BAUD_RATE = 9600;
 
 // -- Landis+Gyr
-// const unsigned int IV_ADD = 0;
-// const unsigned int PAYLOAD_ADD = 0;
-// const unsigned int MESSAGE_LENGTH = 105;
-// const unsigned int PAYLOAD_LENGTH = 74;
+const unsigned int IV_ADD = 0;
+const unsigned int PAYLOAD_ADD = 0;
+const unsigned int MESSAGE_LENGTH = 105;
+const unsigned int PAYLOAD_LENGTH = 74;
 
 // -- Siemens
 // const unsigned int IV_ADD = 2;
