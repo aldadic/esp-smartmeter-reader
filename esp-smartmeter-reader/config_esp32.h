@@ -19,6 +19,8 @@ const char* MQTT_TOPIC = "homeassistant/sensor/smartmeter/state";
 
 HardwareSerial *smart_meter = &Serial2;
 const int SMARTMETER_BAUD_RATE = 9600;
+#define RX_PIN 16   // v3.0 of the ESP32 Arduino Core changed the default UART2 RX and TX pins to GPIO4 and GPIO25
+#define TX_PIN 17   // the definitions here change the pins back to the original values (only needed for v3.0 and later)
 
 // -- Landis+Gyr
 const unsigned int IV_ADD = 0;

@@ -184,8 +184,12 @@ void DecryptMessage(byte decrypted_message[PAYLOAD_LENGTH]) {
 // --------------- SETUP & LOOP ---------------
 
 void setup() {
-  smart_meter->begin(SMARTMETER_BAUD_RATE);
-  #ifdef SWAP_SERIAL
+  #if defined(RX_PIN) && defined(TX_PIN)
+    smart_meter->begin(SMARTMETER_BAUD_RATE, SERIAL_8N1, RX_PIN, TX_PIN);
+  #else
+    smart_meter->begin(SMARTMETER_BAUD_RATE);
+  #endif
+  #if defined(SWAP_SERIAL)
     smart_meter->swap();  // ESP8266: Remap Serial (UART0) to GPIO15 (TX) and GPIO13 (RX)
   #endif
   logger->begin(SERIAL_MONITOR_BAUD_RATE);
