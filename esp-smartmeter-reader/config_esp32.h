@@ -23,16 +23,12 @@ const int SMARTMETER_BAUD_RATE = 9600;
 #define TX_PIN 17   // the definitions here change the pins back to the original values (only needed for v3.0 and later)
 
 // -- Landis+Gyr
-const unsigned int IV_ADD = 0;
-const unsigned int PAYLOAD_ADD = 0;
 const unsigned int MESSAGE_LENGTH = 105;
-const unsigned int PAYLOAD_LENGTH = 74;
+const unsigned int HEADER_LENGTH = 14;   // position where the system title starts
 
 // -- Siemens
-// const unsigned int IV_ADD = 2;
-// const unsigned int PAYLOAD_ADD = 18;
 // const unsigned int MESSAGE_LENGTH = 125;
-// const unsigned int PAYLOAD_LENGTH = 90;
+// const unsigned int HEADER_LENGTH = 16;   // position where the system title starts
 
 // --------------- LOGGING ---------------
 

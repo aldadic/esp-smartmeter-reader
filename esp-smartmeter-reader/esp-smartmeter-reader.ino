@@ -86,11 +86,13 @@ void ReadSerialData() {
   }
 }
 
-// -------------- DATA PARSER ---------------
+// -------------- DATA PARSING ---------------
 
-int BytesToInt(byte bytes[], unsigned int left, unsigned int right) {
+const unsigned int PAYLOAD_LENGTH = MESSAGE_LENGTH - HEADER_LENGTH - 17;
+
+int BytesToInt(byte bytes[], unsigned int left, unsigned int length) {
   int result = 0;
-  for (unsigned int i = left; i < right; i++) {
+  for (unsigned int i = left; i < left + length; i++) {
     result = result * 256 + bytes[i];
   }
   return result;
@@ -107,26 +109,26 @@ void ParseReceivedData() {
   DecryptMessage(decrypted_message);
 
   // Extract time and date from decrypted message
-  int year = BytesToInt(decrypted_message, 22 + PAYLOAD_ADD, 24 + PAYLOAD_ADD);
-  int month = BytesToInt(decrypted_message, 24 + PAYLOAD_ADD, 25 + PAYLOAD_ADD);
-  int day = BytesToInt(decrypted_message, 25 + PAYLOAD_ADD, 26 + PAYLOAD_ADD);
-  int hour = BytesToInt(decrypted_message, 27 + PAYLOAD_ADD, 28 + PAYLOAD_ADD);
-  int minute = BytesToInt(decrypted_message, 28 + PAYLOAD_ADD, 29 + PAYLOAD_ADD);
-  int second = BytesToInt(decrypted_message, 29 + PAYLOAD_ADD, 30 + PAYLOAD_ADD);
+  int year = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 52, 2);
+  int month = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 50, 1);
+  int day = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 49, 1);
+  int hour = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 47, 1);
+  int minute = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 46, 1);
+  int second = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 45, 1);
   char timestamp[20];
   sprintf(timestamp, "%02d.%02d.%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
 
   // Create JSON
   StaticJsonDocument<256> doc;
   doc["timestamp"] = timestamp;
-  doc["+A"] = BytesToInt(decrypted_message, 35 + PAYLOAD_ADD, 39 + PAYLOAD_ADD)/1000.0;
-  doc["-A"] = BytesToInt(decrypted_message, 40 + PAYLOAD_ADD, 44 + PAYLOAD_ADD)/1000.0;
-  doc["+R"] = BytesToInt(decrypted_message, 45 + PAYLOAD_ADD, 49 + PAYLOAD_ADD)/1000.0;
-  doc["-R"] = BytesToInt(decrypted_message, 50 + PAYLOAD_ADD, 54 + PAYLOAD_ADD)/1000.0;
-  doc["+P"] = BytesToInt(decrypted_message, 55 + PAYLOAD_ADD, 59 + PAYLOAD_ADD);
-  doc["-P"] = BytesToInt(decrypted_message, 60 + PAYLOAD_ADD, 64 + PAYLOAD_ADD);
-  doc["+Q"] = BytesToInt(decrypted_message, 65 + PAYLOAD_ADD, 69 + PAYLOAD_ADD);
-  doc["-Q"] = BytesToInt(decrypted_message, 70 + PAYLOAD_ADD, 74 + PAYLOAD_ADD);
+  doc["+A"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 39, 4)/1000.0;
+  doc["-A"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 34, 4)/1000.0;
+  doc["+R"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 29, 4)/1000.0;
+  doc["-R"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 24, 4)/1000.0;
+  doc["+P"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 19, 4);
+  doc["-P"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 14, 4);
+  doc["+Q"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 9, 4);
+  doc["-Q"] = BytesToInt(decrypted_message, PAYLOAD_LENGTH - 4, 4);
   char payload[256];
   serializeJson(doc, payload);
 
@@ -137,7 +139,7 @@ void ParseReceivedData() {
   }
 }
 
-// --------------- CRC VALIDATOR ---------------
+// --------------- CRC VALIDATION ---------------
 
 FastCRC16 CRC16;
 
@@ -153,7 +155,7 @@ bool ValidateCRC() {
   return true;
 }
 
-// --------------- DECRYPTOR ---------------
+// --------------- DECRYPTION ---------------
 
 #if defined(ESP32)
 mbedtls_aes_context aes;
@@ -161,13 +163,13 @@ mbedtls_aes_context aes;
 CTR<AES128> ctr;
 #endif
 
-void DecryptMessage(byte decrypted_message[PAYLOAD_LENGTH]) {
+void DecryptMessage(byte decrypted_message[]) {
   // Extract message and iv from received data
   byte encrypted_message[PAYLOAD_LENGTH] = {0};
-  memcpy(encrypted_message, received_data + 28 + IV_ADD, PAYLOAD_LENGTH);
+  memcpy(encrypted_message, received_data + HEADER_LENGTH + 14, PAYLOAD_LENGTH);
   byte iv[16] = {0};
-  memcpy(iv, received_data + 14 + IV_ADD, 8);
-  memcpy(iv + 8, received_data + 24 + IV_ADD, 4);
+  memcpy(iv, received_data + HEADER_LENGTH, 8);
+  memcpy(iv + 8, received_data + HEADER_LENGTH + 10, 4);
   iv[15] = 0x02;
 
   // Decrypt message
