@@ -10,7 +10,7 @@
 #include <CTR.h>
 #include <ESP8266WiFi.h>
 #else
-#error "Error: The device is not a ESP8266 or ESP32!"
+#error "Error: The device is not an ESP8266 or ESP32!"
 #endif
 
 // --------------- WIFI ---------------
