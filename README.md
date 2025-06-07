@@ -3,13 +3,14 @@
 [![Compile Sketch for ESP32](https://github.com/aldadic/esp-smartmeter-reader/actions/workflows/compile_esp32.yml/badge.svg)](https://github.com/aldadic/esp-smartmeter-reader/actions/workflows/compile_esp32.yml)
 [![Compile Sketch for ESP8266](https://github.com/aldadic/esp-smartmeter-reader/actions/workflows/compile_esp8266.yml/badge.svg)](https://github.com/aldadic/esp-smartmeter-reader/actions/workflows/compile_esp8266.yml)
 
-This Arduino sketch was made to read and decrypt the data from my smart meter operated by Wiener Netze and publish it via MQTT. This way the data can be easily integrated into Home Assistant (see [here](#home-assistant-integration)). This sketch works both on the ESP32 and ESP8266. This project was only possible with the information from [this thread](https://www.lteforum.at/mobilfunk/wiener-netze-smart-meter-auslesen.16222/); thank you to everyone who shared their findings (especially the user "pocki").
+This Arduino sketch was made to read and decrypt the data from smart meters operated by Wiener Netze and publish it via MQTT. This way the data can be easily integrated into Home Assistant (see [here](#home-assistant-integration)). This sketch works both on the ESP32 and ESP8266. This project was only possible with the information from [this thread](https://www.lteforum.at/mobilfunk/wiener-netze-smart-meter-auslesen.16222/); thank you to everyone who shared their findings (especially the user "pocki").
 
 ## Supported smart meters
 
 The sketch supports the following smart meter manufacturers:
 
 * Landis+Gyr (tested with Landis+Gyr E450)
+* Iskraemeco (tested with ISKRA AM550)
 * Siemens (thanks [@nomike](https://github.com/nomike))
 
 ## Setting up the ESP32 / ESP8266

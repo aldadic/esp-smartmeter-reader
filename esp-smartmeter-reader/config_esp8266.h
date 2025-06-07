@@ -21,7 +21,7 @@ HardwareSerial *smart_meter = &Serial;
 const int SMARTMETER_BAUD_RATE = 9600;
 #define SWAP_SERIAL  // Use alternative pins for Serial: GPIO15 (TX) and GPIO13 (RX)
 
-// -- Landis+Gyr
+// -- Landis+Gyr and Iskraemeco
 const unsigned int MESSAGE_LENGTH = 105;
 const unsigned int HEADER_LENGTH = 14;   // position where the system title starts
 
