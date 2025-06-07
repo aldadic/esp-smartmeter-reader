@@ -60,12 +60,14 @@ mqtt:
       unit_of_measurement: "kWh"
       state_class: "total_increasing"
       value_template: "{{ value_json['+A'] }}"
+      expire_after: 30  # become unavailable if no data is received for 30 seconds
     - name: "Momentanleistung"
       state_topic: "homeassistant/sensor/smartmeter/state" # use topic from config.h
       device_class: "power"
       unit_of_measurement: "W"
       state_class: "measurement"
       value_template: "{{ value_json['+P'] }}"
+      expire_after: 30  # become unavailable if no data is received for 30 seconds
 
 # the history of instantaneous power is not interesting 
 # therefore exclude it from the recorder
@@ -73,4 +75,23 @@ recorder:
   exclude:
     entities:
       - sensor.momentanleistung
+```
+
+I have also set up an automation that sends a notification to my phone when one of the sensors becomes unavailable.
+Here is an example of such an automation:
+
+```yaml
+automation:
+  - alias: Notify when smart meter sensor is unavailable
+    triggers:
+      - trigger: state
+        entity_id:
+          - sensor.zahlerstand
+          - sensor.momentanleistung
+        to: unavailable
+    actions:
+      - action: notify.mobile_app_your_phone
+        data:
+          title: ⚠️ Warnung
+          message: Keine Smart Meter Daten!
 ```
