@@ -68,13 +68,6 @@ mqtt:
       state_class: "measurement"
       value_template: "{{ value_json['+P'] }}"
       expire_after: 30  # become unavailable if no data is received for 30 seconds
-
-# the history of instantaneous power is not interesting 
-# therefore exclude it from the recorder
-recorder:
-  exclude:
-    entities:
-      - sensor.momentanleistung
 ```
 
 I have also set up an automation that sends a notification to my phone when one of the sensors becomes unavailable.
